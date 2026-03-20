@@ -38,6 +38,47 @@
       line-height: 1.5;
     }
 
+    form {
+      margin-top: 24px;
+      display: grid;
+      gap: 12px;
+    }
+
+    input,
+    button {
+      width: 100%;
+      box-sizing: border-box;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      padding: 12px 14px;
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      background: #111827;
+      color: #ffffff;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button.secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    #auth {
+      margin-top: 24px;
+      text-align: left;
+    }
+
+    #session {
+      margin-top: 16px;
+      padding: 16px;
+      border-radius: 12px;
+      background: #f9fafb;
+    }
+
     #status {
       margin-top: 20px;
       font-weight: 700;
@@ -53,9 +94,19 @@
 <body>
   <main>
     <h1>HELLO</h1>
-    <p>Supabase client is wired in this page.</p>
+    <p>Supabase client and auth are wired into this page.</p>
     <p>Copy <code>supabase-config.example.js</code> to <code>supabase-config.js</code> and paste your project credentials.</p>
     <p id="status">Checking Supabase...</p>
+    <section id="auth">
+      <form id="auth-form">
+        <input id="email" type="email" placeholder="you@example.com" autocomplete="email" required>
+        <button type="submit">Sign in with magic link</button>
+      </form>
+      <div id="session" hidden>
+        <p id="session-text"></p>
+        <button id="sign-out" class="secondary" type="button">Sign out</button>
+      </div>
+    </section>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./supabase-config.js"></script>

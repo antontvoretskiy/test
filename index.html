@@ -4,8 +4,61 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HELLO</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #f4f4f5;
+      color: #111827;
+    }
+
+    main {
+      width: min(560px, calc(100vw - 32px));
+      padding: 32px;
+      border-radius: 16px;
+      background: #ffffff;
+      box-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
+      text-align: center;
+    }
+
+    h1 {
+      margin: 0 0 16px;
+      font-size: 48px;
+    }
+
+    p {
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    #status {
+      margin-top: 20px;
+      font-weight: 700;
+    }
+
+    code {
+      padding: 2px 6px;
+      border-radius: 6px;
+      background: #f3f4f6;
+    }
+  </style>
 </head>
 <body>
-  <h1>HELLO</h1>
+  <main>
+    <h1>HELLO</h1>
+    <p>Supabase client is wired in this page.</p>
+    <p>Copy <code>supabase-config.example.js</code> to <code>supabase-config.js</code> and paste your project credentials.</p>
+    <p id="status">Checking Supabase...</p>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./supabase-config.js"></script>
+  <script src="./app.js"></script>
 </body>
 </html>

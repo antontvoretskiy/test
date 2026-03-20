@@ -4,6 +4,8 @@ const emailInput = document.getElementById("email");
 const sessionEl = document.getElementById("session");
 const sessionTextEl = document.getElementById("session-text");
 const signOutButton = document.getElementById("sign-out");
+const signInGoogleButton = document.getElementById("sign-in-google");
+const signInGithubButton = document.getElementById("sign-in-github");
 
 let supabaseClient;
 
@@ -53,6 +55,25 @@ async function handleAuthSubmit(event) {
   }
 }
 
+async function handleOAuthSignIn(provider) {
+  try {
+    setStatus(`Redirecting to ${provider}...`);
+    const redirectUrl = window.SUPABASE_REDIRECT_URL || (window.location.origin + window.location.pathname);
+    const { error } = await supabaseClient.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: redirectUrl,
+      },
+    });
+
+    if (error) {
+      throw error;
+    }
+  } catch (error) {
+    setStatus(`OAuth error: ${error.message}`, true);
+  }
+}
+
 async function handleSignOut() {
   try {
     const { error } = await supabaseClient.auth.signOut();
@@ -84,6 +105,8 @@ async function initSupabase() {
 
     authForm.addEventListener("submit", handleAuthSubmit);
     signOutButton.addEventListener("click", handleSignOut);
+    signInGoogleButton.addEventListener("click", () => handleOAuthSignIn("google"));
+    signInGithubButton.addEventListener("click", () => handleOAuthSignIn("github"));
     supabaseClient.auth.onAuthStateChange((_event, session) => {
       renderSession(session);
     });

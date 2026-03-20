@@ -44,6 +44,12 @@
       gap: 12px;
     }
 
+    .oauth {
+      margin-top: 24px;
+      display: grid;
+      gap: 12px;
+    }
+
     input,
     button {
       width: 100%;
@@ -65,6 +71,19 @@
     button.secondary {
       background: #e5e7eb;
       color: #111827;
+    }
+
+    button.oauth-button {
+      background: #ffffff;
+      color: #111827;
+      border: 1px solid #d1d5db;
+    }
+
+    .separator {
+      margin-top: 20px;
+      text-align: center;
+      color: #6b7280;
+      font-size: 14px;
     }
 
     #auth {
@@ -98,6 +117,11 @@
     <p>Copy <code>supabase-config.example.js</code> to <code>supabase-config.js</code> and paste your project credentials.</p>
     <p id="status">Checking Supabase...</p>
     <section id="auth">
+      <div class="oauth">
+        <button id="sign-in-google" class="oauth-button" type="button">Continue with Google</button>
+        <button id="sign-in-github" class="oauth-button" type="button">Continue with GitHub</button>
+      </div>
+      <p class="separator">or use email</p>
       <form id="auth-form">
         <input id="email" type="email" placeholder="you@example.com" autocomplete="email" required>
         <button type="submit">Sign in with magic link</button>

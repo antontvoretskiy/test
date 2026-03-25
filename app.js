@@ -13,6 +13,7 @@ const historyListEl = document.getElementById("history-list");
 const chatEl = document.getElementById("chat");
 const chatInputEl = document.getElementById("chat-input");
 const fileInputEl = document.getElementById("file-input");
+const attachTriggerButton = document.getElementById("attach-trigger");
 const sendMessageButton = document.getElementById("send-message");
 const runResearchButton = document.getElementById("run-research");
 const attachmentsEl = document.getElementById("attachments");
@@ -910,6 +911,11 @@ async function initSupabase() {
 }
 
 fileInputEl.addEventListener("change", handleFileSelection);
+if (attachTriggerButton) {
+  attachTriggerButton.addEventListener("click", () => {
+    fileInputEl.click();
+  });
+}
 sendMessageButton.addEventListener("click", handleSendMessage);
 runResearchButton.addEventListener("click", runResearch);
 downloadReportButton.addEventListener("click", downloadReport);

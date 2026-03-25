@@ -309,16 +309,26 @@
       font-weight: 500;
     }
 
+    .composer-input {
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      border-radius: 14px;
+      background: #ffffff;
+    }
+
     .send-button {
       font-size: 20px;
     }
 
     .composer textarea {
+      width: 100%;
       min-height: 72px;
       border: 0;
       padding: 8px 4px;
       resize: none;
       background: transparent;
+      font-weight: 400;
     }
 
     .composer textarea:focus {
@@ -338,6 +348,18 @@
       color: var(--muted);
       font-size: 12px;
       line-height: 1.5;
+    }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
     }
 
     .file-label input {
@@ -553,13 +575,11 @@
         <div class="composer">
           <div id="attachment-bar" class="attachment-bar"></div>
           <div class="composer-row">
-            <label class="icon-button" aria-label="Добавить документы">
-              +
-              <input id="file-input" type="file" multiple accept=".txt,.md,.json,.csv,.pdf,.docx">
-            </label>
-            <label style="margin: 0;">
+            <button id="attach-trigger" class="icon-button" type="button" aria-label="Добавить документы">+</button>
+            <input id="file-input" class="visually-hidden" type="file" multiple accept=".txt,.md,.json,.csv,.pdf,.docx">
+            <div class="composer-input">
               <textarea id="chat-input" placeholder="Опишите продукт, аудиторию, задачу исследования и ключевые гипотезы."></textarea>
-            </label>
+            </div>
             <button id="send-message" class="send-button" type="button" aria-label="Отправить">↑</button>
           </div>
           <div class="composer-footer">

@@ -227,6 +227,32 @@
       font: 400 13px/1.5 Arial, sans-serif;
     }
 
+    .history {
+      margin-top: 12px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .history-item {
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: #fffdfa;
+    }
+
+    .history-item strong {
+      display: block;
+      margin-bottom: 4px;
+      font: 700 14px/1.4 Arial, sans-serif;
+    }
+
+    .history-item span {
+      display: block;
+      color: var(--muted);
+      font: 400 12px/1.5 Arial, sans-serif;
+      margin-bottom: 8px;
+    }
+
     .results {
       display: grid;
       gap: 20px;
@@ -424,6 +450,7 @@
               <p>After login, save the latest research run into your Supabase project.</p>
               <button id="save-run" class="ghost" type="button" disabled>Save latest run</button>
               <div id="save-status" class="save-status">No saved runs yet.</div>
+              <div id="history-list" class="history"></div>
             </div>
           </div>
         </section>

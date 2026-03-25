@@ -11,10 +11,12 @@ const loadDemoButton = document.getElementById("load-demo");
 const resultsRoot = document.getElementById("results-root");
 const saveRunButton = document.getElementById("save-run");
 const saveStatusEl = document.getElementById("save-status");
+const historyListEl = document.getElementById("history-list");
 
 let supabaseClient;
 let currentSession = null;
 let latestResearchRun = null;
+let savedRuns = [];
 
 const segmentArchetypes = [
   {
@@ -106,6 +108,52 @@ function syncSaveButtonState() {
   saveRunButton.disabled = !currentSession || !latestResearchRun;
 }
 
+function renderHistory() {
+  if (!currentSession) {
+    historyListEl.innerHTML = "";
+    return;
+  }
+
+  if (!savedRuns.length) {
+    historyListEl.innerHTML = '<div class="muted">No saved runs loaded yet.</div>';
+    return;
+  }
+
+  historyListEl.innerHTML = savedRuns.map((run) => `
+    <article class="history-item">
+      <strong>${run.project_name}</strong>
+      <span>${new Date(run.created_at).toLocaleString()} · ${run.simulation_mode}</span>
+      <button class="ghost" type="button" data-run-id="${run.id}">Load run</button>
+    </article>
+  `).join("");
+}
+
+async function loadHistory() {
+  if (!supabaseClient || !currentSession) {
+    savedRuns = [];
+    renderHistory();
+    return;
+  }
+
+  try {
+    const { data, error } = await supabaseClient
+      .from("research_runs")
+      .select("id, project_name, simulation_mode, created_at, output_payload")
+      .order("created_at", { ascending: false })
+      .limit(8);
+
+    if (error) {
+      throw error;
+    }
+
+    savedRuns = data || [];
+    renderHistory();
+  } catch (error) {
+    savedRuns = [];
+    historyListEl.innerHTML = `<div class="muted">Could not load history: ${error.message}</div>`;
+  }
+}
+
 function renderSession(session) {
   currentSession = session || null;
   const userEmail = session?.user?.email;
@@ -119,6 +167,7 @@ function renderSession(session) {
     setStatus("Supabase connected and authorized.");
     setSaveStatus(latestResearchRun ? "Ready to save the latest run to Supabase." : "Generate a run first, then save it.");
     syncSaveButtonState();
+    loadHistory();
     return;
   }
 
@@ -126,6 +175,8 @@ function renderSession(session) {
   setStatus("Supabase connected. Sign in or keep using the local MVP.");
   setSaveStatus(latestResearchRun ? "Sign in to save the latest run." : "No saved runs yet.");
   syncSaveButtonState();
+  savedRuns = [];
+  renderHistory();
 }
 
 async function handleAuthSubmit(event) {
@@ -530,6 +581,7 @@ async function saveLatestRun() {
     }
 
     setSaveStatus(`Run saved to Supabase at ${new Date().toLocaleTimeString()}.`);
+    await loadHistory();
   } catch (error) {
     if (error.message?.includes("relation") || error.message?.includes("does not exist")) {
       setSaveStatus("Create the table first with supabase-schema.sql, then save again.", true);
@@ -538,6 +590,24 @@ async function saveLatestRun() {
 
     setSaveStatus(`Save failed: ${error.message}`, true);
   }
+}
+
+function handleHistoryClick(event) {
+  const button = event.target.closest("[data-run-id]");
+
+  if (!button) {
+    return;
+  }
+
+  const run = savedRuns.find((item) => item.id === button.dataset.runId);
+
+  if (!run?.output_payload) {
+    setSaveStatus("Could not load this run.", true);
+    return;
+  }
+
+  renderResearch(run.output_payload);
+  setSaveStatus("Loaded saved run from Supabase.");
 }
 
 async function initSupabase() {
@@ -572,5 +642,6 @@ async function initSupabase() {
 loadDemoButton.addEventListener("click", fillDemoData);
 researchForm.addEventListener("submit", handleResearchSubmit);
 saveRunButton.addEventListener("click", saveLatestRun);
+historyListEl.addEventListener("click", handleHistoryClick);
 fillDemoData();
 initSupabase();

@@ -207,6 +207,26 @@
       font: 400 14px/1.5 Arial, sans-serif;
     }
 
+    .save-panel {
+      margin-top: 16px;
+      padding: 14px;
+      border-radius: 16px;
+      background: #f8f1e6;
+      border: 1px solid var(--line);
+    }
+
+    .save-panel p {
+      margin: 0 0 10px;
+      color: var(--muted);
+      font: 400 13px/1.5 Arial, sans-serif;
+    }
+
+    .save-status {
+      margin-top: 10px;
+      color: var(--muted);
+      font: 400 13px/1.5 Arial, sans-serif;
+    }
+
     .results {
       display: grid;
       gap: 20px;
@@ -399,6 +419,11 @@
             <div class="session" id="session" hidden>
               <p id="session-text"></p>
               <button id="sign-out" class="ghost" type="button">Sign out</button>
+            </div>
+            <div class="save-panel">
+              <p>After login, save the latest research run into your Supabase project.</p>
+              <button id="save-run" class="ghost" type="button" disabled>Save latest run</button>
+              <div id="save-status" class="save-status">No saved runs yet.</div>
             </div>
           </div>
         </section>

@@ -9,8 +9,12 @@ const signInGithubButton = document.getElementById("sign-in-github");
 const researchForm = document.getElementById("research-form");
 const loadDemoButton = document.getElementById("load-demo");
 const resultsRoot = document.getElementById("results-root");
+const saveRunButton = document.getElementById("save-run");
+const saveStatusEl = document.getElementById("save-status");
 
 let supabaseClient;
+let currentSession = null;
+let latestResearchRun = null;
 
 const segmentArchetypes = [
   {
@@ -93,7 +97,17 @@ function setStatus(message, isError = false) {
   statusEl.classList.toggle("error", isError);
 }
 
+function setSaveStatus(message, isError = false) {
+  saveStatusEl.textContent = message;
+  saveStatusEl.style.color = isError ? "#b42318" : "#6b5f54";
+}
+
+function syncSaveButtonState() {
+  saveRunButton.disabled = !currentSession || !latestResearchRun;
+}
+
 function renderSession(session) {
+  currentSession = session || null;
   const userEmail = session?.user?.email;
   const isSignedIn = Boolean(userEmail);
 
@@ -103,11 +117,15 @@ function renderSession(session) {
   if (isSignedIn) {
     sessionTextEl.textContent = `Signed in as ${userEmail}`;
     setStatus("Supabase connected and authorized.");
+    setSaveStatus(latestResearchRun ? "Ready to save the latest run to Supabase." : "Generate a run first, then save it.");
+    syncSaveButtonState();
     return;
   }
 
   sessionTextEl.textContent = "";
   setStatus("Supabase connected. Sign in or keep using the local MVP.");
+  setSaveStatus(latestResearchRun ? "Sign in to save the latest run." : "No saved runs yet.");
+  syncSaveButtonState();
 }
 
 async function handleAuthSubmit(event) {
@@ -443,6 +461,9 @@ function renderInterviews(segments) {
 }
 
 function renderResearch(research) {
+  latestResearchRun = research;
+  syncSaveButtonState();
+  setSaveStatus(currentSession ? "Latest run is ready to save." : "Sign in to save this run to Supabase.");
   resultsRoot.innerHTML = `
     ${renderSummary(research.summary, research.meta)}
     <div class="results-grid">
@@ -472,7 +493,51 @@ function handleResearchSubmit(event) {
 
   const formData = getFormData();
   const research = generateResearch(formData);
+  research.input = formData;
   renderResearch(research);
+}
+
+async function saveLatestRun() {
+  if (!supabaseClient) {
+    setSaveStatus("Supabase client is not ready.", true);
+    return;
+  }
+
+  if (!currentSession) {
+    setSaveStatus("Sign in before saving to Supabase.", true);
+    return;
+  }
+
+  if (!latestResearchRun) {
+    setSaveStatus("Generate a research run first.", true);
+    return;
+  }
+
+  try {
+    setSaveStatus("Saving run to Supabase...");
+    const payload = {
+      user_id: currentSession.user.id,
+      project_name: latestResearchRun.meta.projectName,
+      simulation_mode: latestResearchRun.meta.simulationMode,
+      input_payload: latestResearchRun.input,
+      output_payload: latestResearchRun,
+    };
+
+    const { error } = await supabaseClient.from("research_runs").insert(payload);
+
+    if (error) {
+      throw error;
+    }
+
+    setSaveStatus(`Run saved to Supabase at ${new Date().toLocaleTimeString()}.`);
+  } catch (error) {
+    if (error.message?.includes("relation") || error.message?.includes("does not exist")) {
+      setSaveStatus("Create the table first with supabase-schema.sql, then save again.", true);
+      return;
+    }
+
+    setSaveStatus(`Save failed: ${error.message}`, true);
+  }
 }
 
 async function initSupabase() {
@@ -506,5 +571,6 @@ async function initSupabase() {
 
 loadDemoButton.addEventListener("click", fillDemoData);
 researchForm.addEventListener("submit", handleResearchSubmit);
+saveRunButton.addEventListener("click", saveLatestRun);
 fillDemoData();
 initSupabase();

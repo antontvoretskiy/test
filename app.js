@@ -122,7 +122,7 @@ function renderHistory() {
   historyListEl.innerHTML = savedRuns.map((run) => `
     <article class="history-item">
       <strong>${run.project_name}</strong>
-      <span>${new Date(run.created_at).toLocaleString()} · ${run.simulation_mode}</span>
+      <span>${run.scenario_name || "Scenario"} · ${new Date(run.created_at).toLocaleString()} · ${run.simulation_mode}</span>
       <button class="ghost" type="button" data-run-id="${run.id}">Load run</button>
     </article>
   `).join("");
@@ -138,7 +138,7 @@ async function loadHistory() {
   try {
     const { data, error } = await supabaseClient
       .from("research_runs")
-      .select("id, project_name, simulation_mode, created_at, output_payload")
+      .select("id, project_name, scenario_name, simulation_mode, created_at, output_payload")
       .order("created_at", { ascending: false })
       .limit(8);
 
@@ -254,6 +254,8 @@ function sanitizeInput(value) {
 
 function getFormData() {
   return {
+    projectName: sanitizeInput(document.getElementById("project-name").value),
+    scenarioName: sanitizeInput(document.getElementById("scenario-name").value),
     productName: sanitizeInput(document.getElementById("product-name").value),
     productPromise: sanitizeInput(document.getElementById("product-promise").value),
     audienceDescription: sanitizeInput(document.getElementById("audience-description").value),
@@ -366,7 +368,9 @@ function generateResearch(formData) {
 
   return {
     meta: {
-      projectName: formData.productName,
+      projectName: formData.projectName,
+      scenarioName: formData.scenarioName,
+      productName: formData.productName,
       generatedAt: new Date().toLocaleString(),
       simulationMode: "Synthetic Only",
     },
@@ -528,6 +532,8 @@ function renderResearch(research) {
 }
 
 function fillDemoData() {
+  document.getElementById("project-name").value = "Synthetic Custdev Studio";
+  document.getElementById("scenario-name").value = "Premium offer validation";
   document.getElementById("product-name").value = "Synthetic Custdev Studio";
   document.getElementById("product-promise").value = "Helps experts and founders model their audience, discover monetizable pain, and generate sharper hooks before launch.";
   document.getElementById("audience-description").value = "Creators, coaches, consultants, and small founders who need clearer positioning and faster market feedback.";
@@ -566,9 +572,49 @@ async function saveLatestRun() {
 
   try {
     setSaveStatus("Saving run to Supabase...");
+    const { data: projectRow, error: projectError } = await supabaseClient
+      .from("projects")
+      .upsert(
+        {
+          user_id: currentSession.user.id,
+          name: latestResearchRun.meta.projectName,
+        },
+        {
+          onConflict: "user_id,name",
+        }
+      )
+      .select("id")
+      .single();
+
+    if (projectError) {
+      throw projectError;
+    }
+
+    const { data: scenarioRow, error: scenarioError } = await supabaseClient
+      .from("scenarios")
+      .upsert(
+        {
+          user_id: currentSession.user.id,
+          project_id: projectRow.id,
+          name: latestResearchRun.meta.scenarioName || "Default scenario",
+        },
+        {
+          onConflict: "project_id,name",
+        }
+      )
+      .select("id")
+      .single();
+
+    if (scenarioError) {
+      throw scenarioError;
+    }
+
     const payload = {
       user_id: currentSession.user.id,
       project_name: latestResearchRun.meta.projectName,
+      project_id: projectRow.id,
+      scenario_id: scenarioRow.id,
+      scenario_name: latestResearchRun.meta.scenarioName || "Default scenario",
       simulation_mode: latestResearchRun.meta.simulationMode,
       input_payload: latestResearchRun.input,
       output_payload: latestResearchRun,

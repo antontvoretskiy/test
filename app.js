@@ -99,11 +99,19 @@ const stopwords = new Set([
 ]);
 
 function setStatus(message, isError = false) {
+  if (!statusEl) {
+    return;
+  }
+
   statusEl.textContent = message;
   statusEl.classList.toggle("error", isError);
 }
 
 function setSaveStatus(message, isError = false) {
+  if (!saveStatusEl) {
+    return;
+  }
+
   saveStatusEl.textContent = message;
   saveStatusEl.style.color = isError ? "#b42318" : "#6f6559";
 }
@@ -147,6 +155,10 @@ function renderChat() {
 }
 
 function renderHistory() {
+  if (!historyListEl) {
+    return;
+  }
+
   if (!currentSession) {
     historyListEl.innerHTML = "";
     return;
@@ -197,11 +209,19 @@ function renderSession(session) {
   const userEmail = session?.user?.email;
   const isSignedIn = Boolean(userEmail);
 
-  authForm.hidden = isSignedIn;
-  sessionEl.hidden = !isSignedIn;
+  if (authForm) {
+    authForm.hidden = isSignedIn;
+  }
+
+  if (sessionEl) {
+    sessionEl.hidden = !isSignedIn;
+  }
 
   if (isSignedIn) {
-    sessionTextEl.textContent = `Вы вошли как ${userEmail}`;
+    if (sessionTextEl) {
+      sessionTextEl.textContent = `Вы вошли как ${userEmail}`;
+    }
+
     setStatus("Supabase подключен и авторизация работает.");
     setSaveStatus(latestResearchRun ? "Можно сохранить текущий прогон в Supabase." : "Сначала запустите исследование.");
     syncSaveButtonState();
@@ -209,7 +229,10 @@ function renderSession(session) {
     return;
   }
 
-  sessionTextEl.textContent = "";
+  if (sessionTextEl) {
+    sessionTextEl.textContent = "";
+  }
+
   setStatus("Supabase подключен. Можно работать локально или войти для сохранения.");
   setSaveStatus(latestResearchRun ? "Войдите, чтобы сохранить текущий прогон." : "Локальный режим активен.");
   syncSaveButtonState();
@@ -819,10 +842,22 @@ async function initSupabase() {
       throw error;
     }
 
-    authForm.addEventListener("submit", handleAuthSubmit);
-    signOutButton.addEventListener("click", handleSignOut);
-    signInGoogleButton.addEventListener("click", () => handleOAuthSignIn("google"));
-    signInGithubButton.addEventListener("click", () => handleOAuthSignIn("github"));
+    if (authForm) {
+      authForm.addEventListener("submit", handleAuthSubmit);
+    }
+
+    if (signOutButton) {
+      signOutButton.addEventListener("click", handleSignOut);
+    }
+
+    if (signInGoogleButton) {
+      signInGoogleButton.addEventListener("click", () => handleOAuthSignIn("google"));
+    }
+
+    if (signInGithubButton) {
+      signInGithubButton.addEventListener("click", () => handleOAuthSignIn("github"));
+    }
+
     supabaseClient.auth.onAuthStateChange((_event, session) => {
       renderSession(session);
     });
@@ -839,7 +874,9 @@ runResearchButton.addEventListener("click", runResearch);
 downloadReportButton.addEventListener("click", downloadReport);
 downloadDossierButton.addEventListener("click", downloadDossier);
 saveRunButton.addEventListener("click", saveLatestRun);
-historyListEl.addEventListener("click", handleHistoryClick);
+if (historyListEl) {
+  historyListEl.addEventListener("click", handleHistoryClick);
+}
 
 fillDemo();
 initSupabase();

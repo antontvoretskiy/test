@@ -3,135 +3,487 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HELLO</title>
+  <title>Synthetic Custdev Lab</title>
   <style>
     :root {
       color-scheme: light;
-      font-family: Arial, sans-serif;
+      --bg: #f5efe2;
+      --paper: #fffdf8;
+      --ink: #1c1917;
+      --muted: #6b5f54;
+      --line: #d7c9b9;
+      --accent: #b44c2f;
+      --accent-dark: #913a22;
+      --soft: #efe2d0;
+      --success: #196c44;
+      --danger: #b42318;
+      font-family: Georgia, "Times New Roman", serif;
+    }
+
+    * {
+      box-sizing: border-box;
     }
 
     body {
       margin: 0;
       min-height: 100vh;
-      display: grid;
-      place-items: center;
-      background: #f4f4f5;
-      color: #111827;
+      background:
+        radial-gradient(circle at top left, rgba(180, 76, 47, 0.12), transparent 28%),
+        linear-gradient(180deg, #fbf6ec 0%, var(--bg) 100%);
+      color: var(--ink);
     }
 
-    main {
-      width: min(560px, calc(100vw - 32px));
-      padding: 32px;
-      border-radius: 16px;
-      background: #ffffff;
-      box-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
-      text-align: center;
+    .page {
+      width: min(1240px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 24px 0 56px;
+    }
+
+    .hero {
+      padding: 28px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: rgba(255, 253, 248, 0.88);
+      box-shadow: 0 24px 80px rgba(39, 27, 16, 0.08);
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font: 700 12px/1.4 Arial, sans-serif;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      font-weight: 700;
     }
 
     h1 {
-      margin: 0 0 16px;
-      font-size: 48px;
+      font-size: clamp(38px, 6vw, 72px);
+      line-height: 0.95;
+      max-width: 780px;
     }
 
-    p {
-      margin: 0;
-      line-height: 1.5;
+    .hero-copy {
+      margin: 16px 0 0;
+      max-width: 720px;
+      color: var(--muted);
+      font: 400 18px/1.6 Arial, sans-serif;
     }
 
-    form {
-      margin-top: 24px;
+    .shell {
+      display: grid;
+      grid-template-columns: minmax(320px, 420px) minmax(0, 1fr);
+      gap: 20px;
+      margin-top: 20px;
+      align-items: start;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: var(--paper);
+      box-shadow: 0 18px 60px rgba(39, 27, 16, 0.08);
+    }
+
+    .panel {
+      padding: 24px;
+    }
+
+    .panel + .panel {
+      border-top: 1px solid var(--line);
+    }
+
+    .stack {
+      display: grid;
+      gap: 20px;
+    }
+
+    .section-copy {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font: 400 14px/1.6 Arial, sans-serif;
+    }
+
+    .status {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: #f7f0e5;
+      color: var(--success);
+      font: 700 14px/1.5 Arial, sans-serif;
+    }
+
+    .status.error {
+      color: var(--danger);
+      background: #fceae7;
+    }
+
+    .auth-actions,
+    .button-row,
+    .summary-grid,
+    .results-grid,
+    .chip-list,
+    .segment-metrics,
+    .segment-quotes {
       display: grid;
       gap: 12px;
     }
 
-    .oauth {
-      margin-top: 24px;
+    .auth-actions,
+    .button-row {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    form,
+    .form-grid {
       display: grid;
       gap: 12px;
+    }
+
+    .form-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      font: 700 13px/1.4 Arial, sans-serif;
+      color: var(--ink);
     }
 
     input,
+    textarea,
+    select,
     button {
       width: 100%;
-      box-sizing: border-box;
-      border-radius: 10px;
-      border: 1px solid #d1d5db;
+      border-radius: 14px;
+      border: 1px solid var(--line);
       padding: 12px 14px;
-      font: inherit;
+      color: var(--ink);
+      background: #fffdfa;
+      font: 400 15px/1.45 Arial, sans-serif;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
     }
 
     button {
       border: 0;
-      background: #111827;
-      color: #ffffff;
+      background: var(--accent);
+      color: #fff8f4;
       font-weight: 700;
       cursor: pointer;
+      transition: transform 140ms ease, background 140ms ease;
+    }
+
+    button:hover {
+      background: var(--accent-dark);
+      transform: translateY(-1px);
     }
 
     button.secondary {
-      background: #e5e7eb;
-      color: #111827;
+      background: var(--soft);
+      color: var(--ink);
     }
 
-    button.oauth-button {
-      background: #ffffff;
-      color: #111827;
-      border: 1px solid #d1d5db;
+    button.ghost {
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--ink);
     }
 
-    .separator {
-      margin-top: 20px;
+    .session {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: #f8f1e6;
+      font: 400 14px/1.5 Arial, sans-serif;
+    }
+
+    .results {
+      display: grid;
+      gap: 20px;
+    }
+
+    .summary-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .summary-tile {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fcf6ec;
+    }
+
+    .summary-tile strong {
+      display: block;
+      font: 700 28px/1 Georgia, serif;
+    }
+
+    .summary-tile span {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font: 400 13px/1.4 Arial, sans-serif;
+    }
+
+    .results-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: start;
+    }
+
+    .result-card {
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: #fffdfa;
+    }
+
+    .result-card h3 {
+      font-size: 26px;
+      margin-bottom: 12px;
+    }
+
+    .chip-list {
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+
+    .chip {
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: #f8f1e6;
+      font: 400 14px/1.5 Arial, sans-serif;
+    }
+
+    .chip strong {
+      display: block;
+      margin-bottom: 4px;
+      font: 700 13px/1.4 Arial, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--accent);
+    }
+
+    .segment-card {
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: #fcf8f1;
+    }
+
+    .segment-card + .segment-card {
+      margin-top: 14px;
+    }
+
+    .segment-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: baseline;
+      margin-bottom: 10px;
+    }
+
+    .segment-header span,
+    .muted {
+      color: var(--muted);
+      font: 400 13px/1.5 Arial, sans-serif;
+    }
+
+    .segment-metrics {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin: 12px 0;
+    }
+
+    .metric {
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: #f4eadc;
+      font: 700 13px/1.4 Arial, sans-serif;
+    }
+
+    .metric span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    .quotes,
+    .interview-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    blockquote,
+    .interview-card {
+      margin: 0;
+      padding: 14px 16px;
+      border-left: 4px solid var(--accent);
+      border-radius: 0 16px 16px 0;
+      background: #fff6eb;
+      font: 400 15px/1.6 Arial, sans-serif;
+    }
+
+    blockquote footer,
+    .interview-card footer {
+      margin-top: 8px;
+      color: var(--muted);
+      font: 400 12px/1.5 Arial, sans-serif;
+    }
+
+    .empty {
+      padding: 36px;
+      border: 1px dashed var(--line);
+      border-radius: 22px;
       text-align: center;
-      color: #6b7280;
-      font-size: 14px;
+      color: var(--muted);
+      font: 400 15px/1.6 Arial, sans-serif;
+      background: rgba(255, 253, 248, 0.7);
     }
 
-    #auth {
-      margin-top: 24px;
-      text-align: left;
-    }
+    @media (max-width: 980px) {
+      .shell,
+      .results-grid,
+      .summary-grid,
+      .segment-metrics,
+      .form-grid,
+      .auth-actions,
+      .button-row {
+        grid-template-columns: 1fr;
+      }
 
-    #session {
-      margin-top: 16px;
-      padding: 16px;
-      border-radius: 12px;
-      background: #f9fafb;
-    }
-
-    #status {
-      margin-top: 20px;
-      font-weight: 700;
-    }
-
-    code {
-      padding: 2px 6px;
-      border-radius: 6px;
-      background: #f3f4f6;
+      .page {
+        width: min(100vw - 20px, 1240px);
+      }
     }
   </style>
 </head>
 <body>
-  <main>
-    <h1>HELLO</h1>
-    <p>Supabase client and auth are wired into this page.</p>
-    <p>Copy <code>supabase-config.example.js</code> to <code>supabase-config.js</code> and paste your project credentials.</p>
-    <p id="status">Checking Supabase...</p>
-    <section id="auth">
-      <div class="oauth">
-        <button id="sign-in-google" class="oauth-button" type="button">Continue with Google</button>
-        <button id="sign-in-github" class="oauth-button" type="button">Continue with GitHub</button>
-      </div>
-      <p class="separator">or use email</p>
-      <form id="auth-form">
-        <input id="email" type="email" placeholder="you@example.com" autocomplete="email" required>
-        <button type="submit">Sign in with magic link</button>
-      </form>
-      <div id="session" hidden>
-        <p id="session-text"></p>
-        <button id="sign-out" class="secondary" type="button">Sign out</button>
-      </div>
+  <div class="page">
+    <section class="hero">
+      <p class="eyebrow">Synthetic Custdev MVP</p>
+      <h1>Turn audience guesses into interview-ready segment models.</h1>
+      <p class="hero-copy">
+        This lab generates synthetic segments, personas, interview answers, pain patterns, and content hooks from a product, audience, brand, and scenario brief.
+      </p>
     </section>
-  </main>
+
+    <div class="shell">
+      <aside class="stack">
+        <section class="card">
+          <div class="panel">
+            <h2>Supabase Auth</h2>
+            <p class="section-copy">Auth stays wired in so you can keep the current project connection and later persist research runs.</p>
+            <div class="status" id="status">Checking Supabase...</div>
+          </div>
+          <div class="panel">
+            <div class="auth-actions">
+              <button id="sign-in-google" class="secondary" type="button">Continue with Google</button>
+              <button id="sign-in-github" class="secondary" type="button">Continue with GitHub</button>
+            </div>
+            <form id="auth-form">
+              <label>
+                Email
+                <input id="email" type="email" placeholder="you@example.com" autocomplete="email" required>
+              </label>
+              <button type="submit">Send magic link</button>
+            </form>
+            <div class="session" id="session" hidden>
+              <p id="session-text"></p>
+              <button id="sign-out" class="ghost" type="button">Sign out</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="panel">
+            <h2>Research Inputs</h2>
+            <p class="section-copy">Enter only what matters for the MVP: product, audience, brand, and a single scenario.</p>
+          </div>
+          <div class="panel">
+            <form id="research-form">
+              <label>
+                Product
+                <input id="product-name" type="text" placeholder="AI content strategy service" required>
+              </label>
+              <label>
+                Product Promise
+                <textarea id="product-promise" placeholder="What problem it solves and what outcome it promises." required></textarea>
+              </label>
+              <label>
+                Audience
+                <textarea id="audience-description" placeholder="Who they are, what market, B2B/B2C, maturity level." required></textarea>
+              </label>
+              <div class="form-grid">
+                <label>
+                  Market
+                  <input id="market" type="text" placeholder="RU-speaking creators">
+                </label>
+                <label>
+                  Channel
+                  <input id="channel" type="text" placeholder="Telegram + Instagram">
+                </label>
+              </div>
+              <label>
+                Brand DNA
+                <textarea id="brand-dna" placeholder="How the expert thinks, sounds, teaches, and positions themselves." required></textarea>
+              </label>
+              <label>
+                Scenario
+                <textarea id="scenario" placeholder="What exactly you want to test: offer, price, transformation, funnel angle." required></textarea>
+              </label>
+              <div class="form-grid">
+                <label>
+                  Segments
+                  <select id="segment-count">
+                    <option value="6">6</option>
+                    <option value="8" selected>8</option>
+                    <option value="10">10</option>
+                    <option value="12">12</option>
+                  </select>
+                </label>
+                <label>
+                  Personas / Segment
+                  <select id="persona-count">
+                    <option value="3">3</option>
+                    <option value="5" selected>5</option>
+                    <option value="8">8</option>
+                  </select>
+                </label>
+              </div>
+              <div class="button-row">
+                <button type="submit">Generate Research</button>
+                <button id="load-demo" class="secondary" type="button">Load Demo</button>
+              </div>
+            </form>
+          </div>
+        </section>
+      </aside>
+
+      <main class="card">
+        <div class="panel">
+          <h2>Research Output</h2>
+          <p class="section-copy">Synthetic only for now. Later this model can be upgraded with real documents, interviews, and feedback data.</p>
+        </div>
+        <div class="panel">
+          <div id="results-root" class="results">
+            <div class="empty">
+              Run your first synthetic research flow to get segments, pain patterns, interview answers, and commercial hooks.
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./supabase-config.js"></script>
   <script src="./app.js"></script>

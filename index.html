@@ -7,16 +7,16 @@
   <style>
     :root {
       color-scheme: light;
-      --bg: #f3efe7;
-      --paper: #fffdf9;
-      --line: #d7cdbf;
-      --text: #1f1b17;
-      --muted: #6f6559;
-      --accent: #9f4127;
-      --accent-dark: #7f321d;
-      --soft: #ede1d0;
-      --assistant: #fff6eb;
-      --user: #ece7ff;
+      --bg: #f5f5f4;
+      --paper: #ffffff;
+      --line: #e7e5e4;
+      --text: #18181b;
+      --muted: #6b7280;
+      --accent: #111827;
+      --accent-dark: #000000;
+      --soft: #f3f4f6;
+      --assistant: #f8fafc;
+      --user: #eef2ff;
       --good: #166534;
       --bad: #b42318;
       font-family: "SF Pro Display", "Segoe UI", Arial, sans-serif;
@@ -29,37 +29,46 @@
     body {
       margin: 0;
       min-height: 100vh;
-      background:
-        radial-gradient(circle at top left, rgba(159, 65, 39, 0.10), transparent 30%),
-        linear-gradient(180deg, #faf6ef 0%, var(--bg) 100%);
+      background: var(--bg);
       color: var(--text);
     }
 
     .page {
-      width: min(1080px, calc(100vw - 24px));
+      width: min(920px, calc(100vw - 24px));
       margin: 0 auto;
       padding: 20px 0 40px;
     }
 
     .hero,
-    .card {
+    .card,
+    details {
       border: 1px solid var(--line);
-      border-radius: 24px;
-      background: rgba(255, 253, 249, 0.92);
-      box-shadow: 0 18px 48px rgba(33, 24, 18, 0.08);
+      border-radius: 18px;
+      background: var(--paper);
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
     }
 
     .hero {
-      padding: 28px;
-      margin-bottom: 16px;
+      padding: 24px;
+      margin-bottom: 14px;
+    }
+
+    .card,
+    details {
+      padding: 18px;
+    }
+
+    .stack {
+      display: grid;
+      gap: 14px;
     }
 
     .eyebrow {
       margin: 0 0 8px;
-      color: var(--accent);
+      color: var(--muted);
       font-size: 12px;
       font-weight: 700;
-      letter-spacing: 0.14em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
     }
 
@@ -70,40 +79,67 @@
     }
 
     h1 {
-      font-size: clamp(34px, 6vw, 64px);
-      line-height: 0.96;
-      max-width: 760px;
+      max-width: 700px;
+      font-size: clamp(28px, 5vw, 46px);
+      line-height: 1.02;
     }
 
-    .hero p:last-child {
-      margin: 14px 0 0;
-      max-width: 760px;
+    .lead,
+    .muted {
       color: var(--muted);
       line-height: 1.6;
-      font-size: 17px;
+      font-size: 14px;
     }
 
-    .stack {
-      display: grid;
-      gap: 16px;
+    .lead {
+      margin: 12px 0 0;
+      max-width: 720px;
+      font-size: 16px;
     }
 
-    .card {
-      padding: 18px;
-    }
-
+    .onboarding,
     .settings-grid,
     .composer-row,
     .result-actions,
     .metrics,
     .segment-metrics,
-    .history {
+    .history,
+    .auth-actions {
       display: grid;
       gap: 12px;
     }
 
+    .onboarding {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-top: 18px;
+    }
+
+    .step,
+    .metric,
+    .segment,
+    .history-item,
+    .theme-item {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #ffffff;
+    }
+
+    .step strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    .step span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
     .settings-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 14px;
     }
 
     label {
@@ -117,9 +153,9 @@
     textarea,
     button {
       width: 100%;
-      border-radius: 16px;
+      border-radius: 14px;
       border: 1px solid var(--line);
-      background: #fffdfa;
+      background: #ffffff;
       color: var(--text);
       padding: 12px 14px;
       font: inherit;
@@ -134,7 +170,7 @@
     button {
       border: 0;
       background: var(--accent);
-      color: #fff9f4;
+      color: #ffffff;
       font-weight: 700;
       cursor: pointer;
       transition: transform 140ms ease, background 140ms ease;
@@ -158,30 +194,30 @@
 
     .chat {
       display: grid;
-      gap: 14px;
-      min-height: 360px;
-      max-height: 640px;
+      gap: 12px;
+      min-height: 260px;
+      max-height: 560px;
       overflow: auto;
-      padding-right: 4px;
+      margin-top: 16px;
     }
 
     .message {
-      max-width: 86%;
+      max-width: 88%;
       padding: 14px 16px;
-      border-radius: 20px;
+      border-radius: 16px;
       line-height: 1.6;
       white-space: pre-wrap;
     }
 
     .message.assistant {
       background: var(--assistant);
-      border-top-left-radius: 8px;
+      border-top-left-radius: 6px;
     }
 
     .message.user {
       margin-left: auto;
       background: var(--user);
-      border-top-right-radius: 8px;
+      border-top-right-radius: 6px;
     }
 
     .message small {
@@ -199,9 +235,9 @@
 
     .doc-chip {
       padding: 8px 10px;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.7);
-      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #ffffff;
       font-size: 13px;
     }
 
@@ -215,10 +251,10 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-width: 154px;
+      min-width: 136px;
       min-height: 48px;
       padding: 0 16px;
-      border-radius: 16px;
+      border-radius: 14px;
       background: var(--soft);
       border: 1px solid var(--line);
       color: var(--text);
@@ -241,9 +277,9 @@
     .status-box {
       display: none;
       margin-top: 14px;
-      padding: 16px;
-      border-radius: 18px;
-      background: #f8f1e6;
+      padding: 14px;
+      border-radius: 14px;
+      background: #fafaf9;
       border: 1px solid var(--line);
     }
 
@@ -256,7 +292,7 @@
       justify-content: space-between;
       gap: 12px;
       padding: 10px 0;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
       font-size: 14px;
     }
 
@@ -274,7 +310,7 @@
     }
 
     .status-run {
-      color: var(--accent);
+      color: #1d4ed8;
       font-weight: 700;
     }
 
@@ -283,14 +319,10 @@
       font-weight: 700;
     }
 
-    .result-actions {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      margin-top: 14px;
-    }
-
     .results {
       display: none;
       gap: 16px;
+      margin-top: 14px;
     }
 
     .results.active {
@@ -301,31 +333,23 @@
       grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 
-    .metric,
-    .segment,
-    .history-item {
-      padding: 16px;
-      border-radius: 18px;
-      border: 1px solid var(--line);
-      background: #fffdfa;
-    }
-
     .metric strong {
       display: block;
-      font-size: 28px;
       margin-bottom: 6px;
+      font-size: 28px;
     }
 
-    .metric span,
-    .muted {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.5;
+    .result-actions {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
-    .segments {
+    .segments,
+    .quotes,
+    .themes,
+    .history {
       display: grid;
-      gap: 12px;
+      gap: 10px;
+      margin-top: 12px;
     }
 
     .segment-metrics {
@@ -335,8 +359,8 @@
 
     .segment-metrics div {
       padding: 10px 12px;
-      border-radius: 14px;
-      background: #f7f0e5;
+      border-radius: 12px;
+      background: #f9fafb;
       font-size: 13px;
       font-weight: 700;
     }
@@ -348,19 +372,12 @@
       font-weight: 400;
     }
 
-    .quotes,
-    .themes,
-    .history {
-      display: grid;
-      gap: 10px;
-    }
-
     blockquote {
       margin: 0;
       padding: 14px 16px;
-      border-left: 4px solid var(--accent);
-      border-radius: 0 16px 16px 0;
-      background: #fff6eb;
+      border-left: 3px solid #d1d5db;
+      border-radius: 0 14px 14px 0;
+      background: #fafaf9;
       line-height: 1.6;
     }
 
@@ -370,61 +387,38 @@
       font-size: 12px;
     }
 
-    .theme-item {
-      padding: 14px 16px;
-      border-radius: 16px;
-      background: #f8f1e6;
-      border: 1px solid var(--line);
-      line-height: 1.5;
-    }
-
-    details {
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      background: #fffdfa;
-      padding: 14px;
-    }
-
     summary {
       cursor: pointer;
       font-weight: 700;
     }
 
-    .auth-grid {
-      display: grid;
-      gap: 12px;
+    .auth-actions {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       margin-top: 14px;
     }
 
-    .auth-actions {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .status-line {
-      padding: 12px 14px;
-      border-radius: 14px;
-      background: #f8f1e6;
-      color: var(--good);
-      font-size: 14px;
-      font-weight: 700;
-    }
-
-    .status-line.error {
-      background: #fceae7;
-      color: var(--bad);
-    }
-
+    .status-line,
     .session {
       padding: 12px 14px;
       border-radius: 14px;
-      background: #f8f1e6;
-      line-height: 1.5;
+      background: #f9fafb;
       font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .status-line {
+      color: var(--good);
+      font-weight: 700;
+      margin-top: 14px;
+    }
+
+    .status-line.error {
+      color: var(--bad);
+      background: #fef2f2;
     }
 
     @media (max-width: 860px) {
+      .onboarding,
       .settings-grid,
       .composer-row,
       .result-actions,
@@ -444,14 +438,29 @@
   <div class="page">
     <section class="hero">
       <p class="eyebrow">Synthetic Custdev</p>
-      <h1>Чатовый MVP для синтетического кастдева и сегментации аудитории.</h1>
-      <p>Вы загружаете документы или пишете контекст текстом. Система показывает статусы обработки, моделирует кастдев-интервью, собирает сегменты и дает два выхода: короткий отчет и полный пакет без потери контекста.</p>
+      <h1>Понятный интерфейс для синтетического кастдева без лишнего шума.</h1>
+      <p class="lead">Поток простой: добавьте контекст, запустите исследование, получите сегменты и скачайте результат в коротком или полном формате.</p>
+      <div class="onboarding">
+        <div class="step">
+          <strong>1. Дайте контекст</strong>
+          <span>Опишите продукт, аудиторию, гипотезы или загрузите документы.</span>
+        </div>
+        <div class="step">
+          <strong>2. Запустите исследование</strong>
+          <span>Система покажет статусы и последовательно прогонит этапы.</span>
+        </div>
+        <div class="step">
+          <strong>3. Получите результат</strong>
+          <span>Читайте краткий отчет или заберите полный пакет без потери контекста.</span>
+        </div>
+      </div>
     </section>
 
     <div class="stack">
       <section class="card">
-        <h2>Настройки исследования</h2>
-        <div class="settings-grid" style="margin-top: 14px;">
+        <h2>Шаг 1. Настройки</h2>
+        <p class="muted">Минимум полей, только проект и сценарий.</p>
+        <div class="settings-grid">
           <label>
             Название проекта
             <input id="project-name" type="text" placeholder="Синтетический кастдев">
@@ -464,15 +473,13 @@
       </section>
 
       <section class="card">
-        <h2>Чат исследования</h2>
-        <p class="muted">Пишите вводные, ответы, гипотезы, описание продукта и аудитории. Можно добавлять документы. После этого запускайте исследование.</p>
-        <div id="chat" class="chat" style="margin-top: 16px;"></div>
-
+        <h2>Шаг 2. Чат исследования</h2>
+        <p class="muted">Пишите вводные сообщением. При необходимости добавляйте документы. После этого запускайте исследование.</p>
+        <div id="chat" class="chat"></div>
         <div id="pipeline" class="status-box"></div>
-
         <div class="composer-row">
           <label style="margin: 0;">
-            <textarea id="chat-input" placeholder="Например: у нас сервис синтетического кастдева для экспертов и консультантов, нужно понять сегменты, боли, триггеры и какие офферы зайдут лучше."></textarea>
+            <textarea id="chat-input" placeholder="Опишите продукт, аудиторию, задачу исследования и ключевые гипотезы."></textarea>
           </label>
           <label class="file-label">
             Документы
@@ -483,14 +490,12 @@
             <button id="run-research" class="secondary" type="button">Запустить исследование</button>
           </div>
         </div>
-
         <div id="attachments" class="attachments">Файлы не выбраны.</div>
       </section>
 
       <section class="card">
-        <h2>Результат</h2>
-        <p class="muted">Короткий отчет нужен для чтения. Полный пакет нужен для сохранения всего контекста без агрессивного сокращения.</p>
-
+        <h2>Шаг 3. Результат</h2>
+        <p class="muted">Краткий отчет для чтения. Полный пакет для хранения всех сообщений, документов и сырого контекста.</p>
         <div id="results" class="results">
           <div id="metrics" class="metrics"></div>
           <div class="result-actions">
@@ -498,46 +503,41 @@
             <button id="download-dossier" class="secondary" type="button">Скачать полный пакет .json</button>
             <button id="save-run" class="ghost" type="button" disabled>Сохранить в Supabase</button>
           </div>
-
           <div>
             <h3>Ключевые сегменты</h3>
-            <div id="segments" class="segments" style="margin-top: 12px;"></div>
+            <div id="segments" class="segments"></div>
           </div>
-
           <div>
             <h3>Топ-фразы и сигналы</h3>
-            <div id="quotes" class="quotes" style="margin-top: 12px;"></div>
+            <div id="quotes" class="quotes"></div>
           </div>
-
           <div>
-            <h3>Темы, хуки и формат выхода</h3>
-            <div id="themes" class="themes" style="margin-top: 12px;"></div>
+            <h3>Темы и формат выхода</h3>
+            <div id="themes" class="themes"></div>
           </div>
         </div>
       </section>
 
       <details>
         <summary>Supabase и история прогонов</summary>
-        <div class="auth-grid">
-          <div id="status" class="status-line">Проверяю Supabase...</div>
-          <div class="auth-actions">
-            <button id="sign-in-google" class="secondary" type="button">Войти через Google</button>
-            <button id="sign-in-github" class="secondary" type="button">Войти через GitHub</button>
-          </div>
-          <form id="auth-form">
-            <label>
-              Email для magic link
-              <input id="email" type="email" placeholder="you@example.com" autocomplete="email" required>
-            </label>
-            <button type="submit">Отправить ссылку</button>
-          </form>
-          <div id="session" class="session" hidden>
-            <p id="session-text"></p>
-            <button id="sign-out" class="ghost" type="button">Выйти</button>
-          </div>
-          <div id="save-status" class="muted">История прогонов пока не загружена.</div>
-          <div id="history-list" class="history"></div>
+        <div id="status" class="status-line">Проверяю Supabase...</div>
+        <div class="auth-actions">
+          <button id="sign-in-google" class="secondary" type="button">Войти через Google</button>
+          <button id="sign-in-github" class="secondary" type="button">Войти через GitHub</button>
         </div>
+        <form id="auth-form" style="display: grid; gap: 12px; margin-top: 14px;">
+          <label>
+            Email для magic link
+            <input id="email" type="email" placeholder="you@example.com" autocomplete="email" required>
+          </label>
+          <button type="submit">Отправить ссылку</button>
+        </form>
+        <div id="session" class="session" hidden>
+          <p id="session-text"></p>
+          <button id="sign-out" class="ghost" type="button">Выйти</button>
+        </div>
+        <div id="save-status" class="muted" style="margin-top: 14px;">История прогонов пока не загружена.</div>
+        <div id="history-list" class="history"></div>
       </details>
     </div>
   </div>

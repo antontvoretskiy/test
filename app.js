@@ -16,6 +16,7 @@ const fileInputEl = document.getElementById("file-input");
 const sendMessageButton = document.getElementById("send-message");
 const runResearchButton = document.getElementById("run-research");
 const attachmentsEl = document.getElementById("attachments");
+const attachmentBarEl = document.getElementById("attachment-bar");
 const pipelineEl = document.getElementById("pipeline");
 
 const resultsEl = document.getElementById("results");
@@ -136,6 +137,26 @@ function addMessage(role, text, docs = []) {
     createdAt: new Date().toISOString(),
   });
   renderChat();
+}
+
+function renderAttachmentBar() {
+  if (!attachmentBarEl) {
+    return;
+  }
+
+  if (!uploadedDocuments.length) {
+    attachmentBarEl.classList.remove("active");
+    attachmentBarEl.innerHTML = "";
+    return;
+  }
+
+  attachmentBarEl.classList.add("active");
+  attachmentBarEl.innerHTML = uploadedDocuments.map((doc) => `
+    <div class="attachment-chip">
+      <span>${escapeHtml(doc.name)}</span>
+      <button type="button" data-doc-id="${doc.id}" aria-label="Удалить документ">×</button>
+    </div>
+  `).join("");
 }
 
 function renderChat() {
@@ -304,12 +325,12 @@ function getProjectMeta() {
 }
 
 function updateAttachmentLabel() {
-  if (!fileInputEl.files.length) {
-    attachmentsEl.textContent = "Файлы не выбраны.";
+  if (!uploadedDocuments.length) {
+    attachmentsEl.textContent = "Документы можно добавлять прямо в чат. После загрузки они сразу участвуют в исследовании.";
     return;
   }
 
-  attachmentsEl.textContent = `Выбрано файлов: ${Array.from(fileInputEl.files).map((file) => file.name).join(", ")}`;
+  attachmentsEl.textContent = `Подключено документов: ${uploadedDocuments.length}. Они уже войдут в следующий прогон исследования.`;
 }
 
 async function readFile(file) {
@@ -337,36 +358,43 @@ async function readFile(file) {
   };
 }
 
-async function handleSendMessage() {
-  const text = chatInputEl.value.trim();
+async function handleFileSelection() {
   const files = Array.from(fileInputEl.files);
 
-  if (!text && !files.length) {
-    addMessage("assistant", "Сначала напишите вводные или добавьте документы.");
+  if (!files.length) {
     return;
   }
 
   const docs = await Promise.all(files.map(readFile));
   uploadedDocuments = uploadedDocuments.concat(docs);
+  renderAttachmentBar();
+  updateAttachmentLabel();
 
-  const summaryText = text || `Добавлены документы: ${docs.map((doc) => doc.name).join(", ")}`;
-  addMessage("user", summaryText, docs);
+  addMessage("user", `Добавил материалы для исследования: ${docs.map((doc) => doc.name).join(", ")}`, docs);
 
   const parsedCount = docs.filter((doc) => doc.parsed).length;
-  if (docs.length) {
-    addMessage(
-      "assistant",
-      parsedCount
-        ? `Материалы приняты. Разобрал текст у ${parsedCount} из ${docs.length} файлов. Остальные сохранены как вложения и войдут в полный пакет без потери контекста.`
-        : "Материалы приняты. В этом MVP бинарные файлы сохраняются как вложения без полного разбора текста, но останутся в полном пакете."
-    );
-  } else {
-    addMessage("assistant", "Контекст принят. Можно продолжать дописывать вводные или сразу запускать исследование.");
+  addMessage(
+    "assistant",
+    parsedCount
+      ? `Документы загружены и подключены к исследованию. Текст разобран у ${parsedCount} из ${docs.length} файлов. Можно сразу запускать исследование.`
+      : "Документы загружены как вложения. Они сохранятся в полном пакете, а исследование можно запускать уже сейчас."
+  );
+
+  fileInputEl.value = "";
+}
+
+async function handleSendMessage() {
+  const text = chatInputEl.value.trim();
+
+  if (!text) {
+    addMessage("assistant", "Сначала напишите вводные или добавьте документы.");
+    return;
   }
 
+  addMessage("user", text);
+  addMessage("assistant", "Контекст принят. Можно продолжать дописывать вводные или сразу запускать исследование.");
+
   chatInputEl.value = "";
-  fileInputEl.value = "";
-  updateAttachmentLabel();
 }
 
 function tokenize(text) {
@@ -651,11 +679,24 @@ function fillDemo() {
   latestResearchRun = null;
   currentStatuses = [];
   renderChat();
+  renderAttachmentBar();
   renderPipeline();
   resultsEl.classList.remove("active");
   chatInputEl.value = "У нас продукт для экспертов и консультантов. Нужно понять сегменты аудитории, реальные боли, что они уже пробовали, какие формулировки использовать в оффере и в контенте.";
   updateAttachmentLabel();
   addMessage("assistant", "Напишите контекст исследования или загрузите документы. Когда материалов станет достаточно, нажмите «Запустить исследование».");
+}
+
+function handleAttachmentBarClick(event) {
+  const button = event.target.closest("[data-doc-id]");
+
+  if (!button) {
+    return;
+  }
+
+  uploadedDocuments = uploadedDocuments.filter((doc) => doc.id !== button.dataset.docId);
+  renderAttachmentBar();
+  updateAttachmentLabel();
 }
 
 function toMarkdown(run) {
@@ -868,12 +909,15 @@ async function initSupabase() {
   }
 }
 
-fileInputEl.addEventListener("change", updateAttachmentLabel);
+fileInputEl.addEventListener("change", handleFileSelection);
 sendMessageButton.addEventListener("click", handleSendMessage);
 runResearchButton.addEventListener("click", runResearch);
 downloadReportButton.addEventListener("click", downloadReport);
 downloadDossierButton.addEventListener("click", downloadDossier);
 saveRunButton.addEventListener("click", saveLatestRun);
+if (attachmentBarEl) {
+  attachmentBarEl.addEventListener("click", handleAttachmentBarClick);
+}
 if (historyListEl) {
   historyListEl.addEventListener("click", handleHistoryClick);
 }
